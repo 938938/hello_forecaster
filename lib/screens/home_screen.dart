@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hello_forecaster/utils/time.dart';
 import 'package:hello_forecaster/widgets/text_modal.dart';
 import 'package:hello_forecaster/widgets/parts.dart';
 
@@ -26,6 +27,16 @@ class _HomeState extends State<Home> {
     }
   }
 
+  Future<void> _editTime() async {
+    final picked = await pickTime(context, time);
+
+    if (picked != null) {
+      setState(() {
+        time = picked;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +45,7 @@ class _HomeState extends State<Home> {
         children: [
           Text('설정', style: TextStyle(fontSize: 25)),
           Parts(title: '이름', value: name, onTap: () => _editTextValue('이름')),
-          Parts(title: '시간', value: '$time'),
+          Parts(title: '시간', value: formatTime(time), onTap: _editTime),
           Parts(
             title: '지역',
             value: location,
