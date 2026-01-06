@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hello_forecaster/utils/time.dart';
+import 'package:hello_forecaster/utils/weather.dart';
 import 'package:hello_forecaster/widgets/text_modal.dart';
 import 'package:hello_forecaster/widgets/parts.dart';
+
+enum EditType { name, location }
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -13,17 +16,26 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   String name = 'ABC';
   TimeOfDay time = const TimeOfDay(hour: 8, minute: 0);
-  String location = '서울';
+  String location = 'abc';
 
-  Future<void> _editTextValue(String type) async {
+  Future<void> _editTextValue(EditType type) async {
     final result = await showTextEditModal(
       context: context,
-      title: '$type 입력',
-      initialValue: type == '이름' ? name : location,
+      title: type == EditType.name ? '이름 입력' : '지역 입력',
+      initialValue: type == EditType.name ? name : location,
     );
 
     if (result != null) {
-      setState(() => name = result);
+      setState(() {
+        switch (type) {
+          case EditType.name:
+            name = result;
+            break;
+          case EditType.location:
+            location = result;
+            break;
+        }
+      });
     }
   }
 
@@ -44,13 +56,18 @@ class _HomeState extends State<Home> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text('설정', style: TextStyle(fontSize: 25)),
-          Parts(title: '이름', value: name, onTap: () => _editTextValue('이름')),
+          Parts(
+            title: '이름',
+            value: name,
+            onTap: () => _editTextValue(EditType.name),
+          ),
           Parts(title: '시간', value: formatTime(time), onTap: _editTime),
           Parts(
             title: '지역',
             value: location,
-            onTap: () => _editTextValue('지역'),
+            onTap: () => _editTextValue(EditType.location),
           ),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
